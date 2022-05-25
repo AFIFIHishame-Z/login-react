@@ -15,7 +15,8 @@ const wait = (duration: number = 1000) => {
 
 export default function Login() {
   const toastBC: any = useRef(null);
-  const showSuccess = () => {
+  const currentYear : number = new Date().getFullYear();
+  const showError = () => {
     toastBC.current.show({
       severity: "error",
       summary: "Username or password invalid!",
@@ -36,10 +37,31 @@ export default function Login() {
     });
   };
 
+  const showSuccess = () => {
+    toastBC.current.show({
+      severity: "success",
+      summary: "Login successfully!",
+      sticky: false,
+      className: "bg-green-400 text-white",
+      closable: false,
+      content: (
+        <div className="flex flex-column" style={{ flex: "1" }}>
+          <div className="text-center">
+            <i
+              className="pi pi-exclamation-triangle"
+              style={{ fontSize: "3rem" }}
+            ></i>
+            <h4>Login successfully!</h4>
+          </div>
+        </div>
+      ),
+    });
+  };
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isSubmitSuccessful,isSubmitted },
   } = useForm({
     mode: "onTouched",
     defaultValues: {
@@ -49,10 +71,16 @@ export default function Login() {
   });
 
   const login = async (data: any) => {
-    await wait(2000);
+    alert(JSON.stringify(data))
+ if(data.username !== 'hishame.afifi1977@gmail.com' || data.password !== "Arinas1919"){
+  showError();
+ }   
+ else{
+   showSuccess()
+ }
   };
 
-  console.log(errors);
+  
 
   return (
     <div
@@ -71,9 +99,9 @@ export default function Login() {
           <div className="col-12 flex justify-content-center py-3">Logo</div>
         </div>
         {/* Login form */}
-        <div className="grid grid-nogutter">
-          <div className="col-12 lg:col-6 lg:col-offset-3 xl:col-4 xl:col-offset-4 p-2">
-            <Card className="px-1 lg:px-5">
+        <div className="grid grid-nogutter mb-5">
+          <div className="col-12 lg:col-6 lg:col-offset-3 xl:col-4 xl:col-offset-4 px-2">
+            <Card className="px-1">
               <div className="grig">
                 <div className="col-12">
                   <h3 className="font-bold text-xl text-center">
@@ -159,10 +187,18 @@ export default function Login() {
                             placeholder="Password"
                             type={"password"}
                             className="block w-full"
-                            {...register("password")}
+                            {...register("password",{
+                              minLength:{value:6, message:"The minimum possible is 6 symols"},
+                              maxLength :{value:10,message:"The maximum possible is 10 symbols"},
+                              required:"The password is required!"
+                            })}
+
                           />
-                          <small id="username1-help" className="block">
-                            Password is required!
+                          <small style={{
+                            height:'1px',
+                            visibility : errors.password ? 'visible':'hidden'
+                          }} id="username1-help" className="block text-red-500">
+                            {errors.password && errors.password.message}
                           </small>
                         </div>
                       </div>
@@ -174,7 +210,7 @@ export default function Login() {
                         <div className="grid">
                           <div className="col-12">
                             <Button
-                              onClick={showSuccess}
+                              onClick={login}
                               disabled={isSubmitting}
                               label="Continue"
                               className="p-button-info text-lg w-full font-bold border-round-sm"
@@ -222,6 +258,11 @@ export default function Login() {
                 </div>
               </form>
             </Card>
+          </div>
+        </div>
+        <div className="grid grid-nogutter py-2">
+          <div className="col-12 flex justify-content-center">
+            &copy;App{currentYear}
           </div>
         </div>
       </div>
